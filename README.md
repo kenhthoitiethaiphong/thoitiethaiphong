@@ -36,7 +36,7 @@
 
 ## 📍 Địa chỉ
 📌 695, Đồi Thiên Văn, Văn Đẩu, Kiến An, Hải Phòng  
-🗺️ https://maps.google.com/?q=20.8055081,106.6309761  
+🗺️ [https://maps.google.com/?q=20.8055081,106.6309761](https://maps.app.goo.gl/rqFQ3uUjTt68Pj8r9)  
 
 ---
 
