@@ -15,7 +15,7 @@
 
 ## 📌 Giới thiệu
 
-**Thời Tiết Hải Phòng** là nền tảng cung cấp thông tin dự báo thời tiết chính xác tại Hải Phòng.
+** Thời Tiết Hải Phòng ( https://thoitiethaiphong.com )**là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng, thông tin bão lũ và các chỉ số độ ẩm, gió, các thông tin về thủy triều, sóng biển quy chuẩn thông tin thời tiết theo giờ và dự báo thời tiết trong 7 ngày tiếp theo. Ngoài ra có đủ lượng mưa và chỉ số không khí theo chuẩn AQI chi tiết, cảnh báo mức độ ô nhiễm không khí tại Hải Phòng
 
 🔍 Bao gồm:
 - 🌦️ Dự báo theo giờ & 7 ngày  
