@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Tiết Hải Phòng - Hệ Thống Điều Hành Khí Quyển Liên Hành Tinh</title>
+    <meta name="description" content="Kênh thông tin thời tiết Hải Phòng chuẩn AQI, dự báo bão lũ và thủy triều chính xác nhất.">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --alien-green: #00ff88;
+            --alien-cyan: #00d9ff;
+            --deep-space: #020205;
+            --terminal-bg: rgba(0, 20, 15, 0.85);
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--deep-space);
+            color: var(--alien-green);
+            font-family: 'Space Mono', monospace;
+            overflow: hidden;
+        }
+
+        /* Tầng 1: Bản đồ Vũ trụ (Background) */
+        #galactic-map {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; filter: grayscale(1) invert(1) brightness(0.2) sepia(1) hue-rotate(100deg);
+            opacity: 0.4;
+        }
+
+        /* Tầng 2: Hiệu ứng HUD */
+        .hud-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; pointer-events: none;
+            background: 
+                radial-gradient(circle at 50% 50%, transparent 50%, rgba(0, 255, 136, 0.05) 100%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 100%, 100% 4px, 3px 100%;
+        }
+
+        /* Tầng 3: Lõi năng lượng (thoitiethaiphong.com) */
+        .universe-core {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100; text-align: center;
+        }
+
+        .core-sun {
+            width: 220px; height: 220px; border-radius: 50%;
+            background: url('https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png') center/cover;
+            box-shadow: 0 0 60px var(--alien-green), 0 0 120px rgba(0, 255, 136, 0.3);
+            border: 4px solid var(--alien-green);
+            margin-bottom: 20px;
+            animation: core-glow 5s infinite alternate;
+        }
+
+        @keyframes core-glow {
+            from { filter: drop-shadow(0 0 10px var(--alien-green)); transform: scale(1); }
+            to { filter: drop-shadow(0 0 40px var(--alien-cyan)); transform: scale(1.05); }
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem; font-weight: 900; letter-spacing: 12px;
+            text-shadow: 0 0 20px var(--alien-green);
+        }
+
+        /* Tầng 4: Vệ tinh (Social List) */
+        .orbit-system {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+        }
+
+        .satellite {
+            position: absolute; width: 45px; height: 45px;
+            background: var(--terminal-bg);
+            border: 1px solid var(--alien-green);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--alien-green); text-decoration: none;
+            font-size: 1.1rem; transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .satellite:hover {
+            background: var(--alien-green); color: var(--deep-space);
+            transform: scale(1.5) !important; box-shadow: 0 0 30px var(--alien-green);
+        }
+
+        /* Tầng 5: Terminal Panels */
+        .terminal {
+            position: fixed; background: var(--terminal-bg);
+            border: 1px solid var(--alien-green);
+            padding: 25px; border-radius: 5px; z-index: 150;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+        }
+
+        .term-left { top: 40px; left: 40px; width: 400px; }
+        .term-right { top: 40px; right: 40px; width: 350px; }
+        .term-bottom { bottom: 40px; left: 40px; width: 320px; text-align: center; }
+
+        .scan-line {
+            width: 100%; height: 2px; background: var(--alien-green);
+            position: absolute; top: 0; left: 0; opacity: 0.3;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .seo-link {
+            position: fixed; bottom: 40px; right: 40px;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--alien-cyan); text-decoration: none;
+            font-weight: 900; letter-spacing: 5px; font-size: 0.8rem;
+        }
+
+        @media (max-width: 1000px) {
+            .orbit-system { display: none; }
+            body { overflow-y: auto; height: auto; }
+            .terminal { position: relative; width: 90% !important; margin: 20px auto; top: 0; left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="galactic-map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3729.648388266136!2d106.6309761!3d20.805508099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71002a701943%3A0xac636244c8f22213!2zVGjhu51pIFRp4bq_dCBI4bqjaSBQaMOybmc!5e0!3m2!1sen!2s!4v1774407781033!5m2!1sen!2s" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+
+    <div class="hud-overlay"></div>
+
+    <div class="universe-core">
+        <a href="https://thoitiethaiphong.com" target="_blank">
+            <div class="core-sun"></div>
+        </a>
+        <h1 class="main-title">Thời Tiết Hải Phòng</h1>
+        <p style="letter-spacing: 10px; font-size: 0.7rem; color: var(--alien-cyan);">ATMOSPHERIC COMMAND CORE</p>
+    </div>
+
+    <div class="terminal term-left">
+        <div class="scan-line"></div>
+        <h3 style="margin-top:0; font-size: 0.8rem; letter-spacing: 3px;">[ MISSION_OBJECTIVE ]</h3>
+        <p style="font-size: 0.85rem; line-height: 1.8; text-align: justify; color: #88ffcc;">
+            <strong>Thời Tiết Hải Phòng ( https://thoitiethaiphong.com )</strong> là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng. Hệ thống cập nhật bão lũ, chỉ số AQI, độ ẩm, gió và thủy triều theo quy chuẩn khí tượng.
+        </p>
+    </div>
+
+    <div class="terminal term-right">
+        <div class="scan-line"></div>
+        <h3 style="margin-top:0; font-size: 0.8rem; letter-spacing: 3px;">[ STATION_LOG ]</h3>
+        <div style="font-size: 0.8rem;">
+            <p>📡 TRẠM: Phù Liễn Meteor</p>
+            <p>📍 TỌA ĐỘ: Đồi Thiên Văn, Hải Phòng</p>
+            <p>📧 COMMS: kenhthoitiethaiphong@gmail.com</p>
+        </div>
+    </div>
+
+    <div class="terminal term-bottom">
+        <p style="font-size: 0.6rem; letter-spacing: 3px; margin-bottom: 10px;">ALIEN_PARTNER_SYNC</p>
+        <a href="https://amthuchaiphong.com" target="_blank">
+            <img src="https://amthuchaiphong.com/wp-content/uploads/2024/10/nuoc-mam-cat-hai-1024x1024.png" style="width: 80px; filter: hue-rotate(90deg);" alt="Nước mắm Cát Hải">
+        </a>
+        <h4 style="margin: 10px 0 5px;">Nước mắm Cát Hải</h4>
+        <small><a href="https://amthuchaiphong.com" style="color:var(--alien-cyan); text-decoration:none;">amthuchaiphong.com</a></small>
+    </div>
+
+    <a href="https://thoitiethaiphong.com" class="seo-link">#THỜI TIẾT HẢI PHÒNG</a>
+
+    <div class="orbit-system" id="satellites-root"></div>
+
+    <script>
+        // List of all 40+ Social Networks from Source
+        const platforms = [
+            { icon: 'fa-facebook', url: 'https://www.facebook.com/kenhthoitiethaiphong/' },
+            { icon: 'fa-youtube', url: 'https://www.youtube.com/@kenhthoitiethaiphong' },
+            { icon: 'fa-tiktok', url: 'https://www.tiktok.com/@kenhthoitiethaiphong' },
+            { icon: 'fa-linkedin-in', url: 'https://www.linkedin.com/in/kenhthoitiethaiphong/' },
+            { icon: 'fa-pinterest-p', url: 'https://www.pinterest.com/kenhthoitiethaiphong' },
+            { icon: 'fa-github', url: 'https://github.com/kenhthoitiethaiphong' },
+            { icon: 'fa-stack-overflow', url: 'https://stackoverflow.com/users/32531220/kenhthoitiethaiphong' },
+            { icon: 'fa-docker', url: 'https://hub.docker.com/u/kenhthoitiethaiphong' },
+            { icon: 'fa-blogger', url: 'https://kenhthoitiethaiphong.blogspot.com/' },
+            { icon: 'fa-wordpress', url: 'https://kenhthoitiethaiphong.wordpress.com/' },
+            { icon: 'fa-google', url: 'https://sites.google.com/view/kenhthoitiethaiphong/' },
+            { icon: 'fa-envelope', url: 'https://thoitiethaiphong.substack.com' },
+            { icon: 'fa-quora', url: 'https://www.quora.com/profile/Thời-Tiết-Hải-Phòng' },
+            { icon: 'fa-mastodon', url: 'https://mastodon.social/@kenhthoitiethaiphong' },
+            { icon: 'fa-tumblr', url: 'https://www.tumblr.com/kenhthoitiethaiphong' },
+            { icon: 'fa-wix', url: 'https://kenhthoitiethaiphong.wixsite.com/kenhthoitiethaiphong' },
+            { icon: 'fa-soundcloud', url: 'https://soundcloud.com/kenhthoitiethaiphong' },
+            { icon: 'fa-vimeo-v', url: 'https://vimeo.com/kenhthoitiethaiphong' },
+            { icon: 'fa-tripadvisor', url: 'https://www.tripadvisor.com/Profile/kenhthoitiethaiphong' },
+            { icon: 'fa-star', url: 'https://www.trustpilot.com/users/69c10b1a2c70363d3d7817ef' },
+            { icon: 'fa-behance', url: 'https://www.behance.net/kenhthoitiethaiphong' },
+            { icon: 'fa-dribbble', url: 'https://dribbble.com/kenhthoitiethaiphong' },
+            { icon: 'fa-500px', url: 'https://500px.com/p/kenhthoitiethaiphong' },
+            { icon: 'fa-sketch', url: 'https://sketchfab.com/kenhthoitiethaiphong' },
+            { icon: 'fa-npm', url: 'https://www.npmjs.com/~kenhthoitiethaiphong' },
+            { icon: 'fa-terminal', url: 'https://qiita.com/kenhthoitiethaiphong' },
+            { icon: 'fa-server', url: 'https://kenhthoitiethaiphong.infinityfree.me/' },
+            { icon: 'fa-file-pdf', url: 'https://www.scribd.com/user/964019815/kenhthoitiethaiphong' },
+            { icon: 'fa-slideshare', url: 'https://www.slideshare.net/kenhthoitiethaiphong' }
+        ];
+
+        const root = document.getElementById('satellites-root');
+        platforms.forEach((p, i) => {
+            const sat = document.createElement('a');
+            sat.className = 'satellite';
+            sat.href = p.url;
+            sat.target = '_blank';
+            sat.innerHTML = `<i class="fa-brands ${p.icon.startsWith('fa-') ? p.icon : 'fa-solid ' + p.icon}"></i>`;
+            
+            // Generate distinct orbits
+            const angle = (i / platforms.length) * (Math.PI * 2);
+            const radius = 250 + (Math.sin(i) * 100) + (i * 5); // Complex spiral orbit
+            const speed = 50 + (Math.random() * 100);
+            
+            sat.style.left = `calc(${Math.cos(angle) * radius}px - 22px)`;
+            sat.style.top = `calc(${Math.sin(angle) * radius}px - 22px)`;
+            
+            // Add alien rotation
+            sat.style.animation = `orbit-move ${speed}s linear infinite`;
+            root.appendChild(sat);
+        });
+    </script>
+</body>
+</html>

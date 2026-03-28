@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Tiết Hải Phòng - Dự Báo Thời Tiết Hải Phòng Chính Xác Nhất</title>
+    <meta name="description" content="Cập nhật thời tiết Hải Phòng nhanh chóng, chính xác. Dự báo bão, lượng mưa, độ ẩm và chỉ số AQI tại Hải Phòng hàng giờ.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --travel-dark: #0a0e12;
+            --travel-gold: #d4af37;
+            --travel-green: #0f9d58;
+            --accent-glow: rgba(212, 175, 55, 0.2);
+            --text-light: #ececec;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--travel-dark);
+            color: var(--text-light);
+            margin: 0; padding: 0; line-height: 1.6;
+        }
+
+        /* Hero Cinematic Section */
+        .hero-travel {
+            height: 90vh;
+            background: linear-gradient(to bottom, rgba(10, 14, 18, 0.3), var(--travel-dark)), 
+                        url('https://thoitiethaiphong.com/wp-content/uploads/2026/03/du-ba-thoi-tiet-hai-phong.jpg') no-repeat center center/cover;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+
+        .hero-travel h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            margin: 0; letter-spacing: 3px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.8);
+        }
+
+        .hero-travel .keyword-badge {
+            background: var(--travel-gold);
+            color: var(--travel-dark);
+            padding: 5px 20px;
+            font-weight: 800;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        /* Content Container */
+        .travel-container {
+            max-width: 1100px;
+            margin: -100px auto 100px;
+            padding: 0 20px;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 50px;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        .intro-text {
+            font-size: 1.15rem;
+            line-height: 2.2;
+            text-align: justify;
+            color: #ccc;
+            border-left: 3px solid var(--travel-gold);
+            padding-left: 35px;
+        }
+
+        /* Navigation Grid */
+        .nav-header {
+            margin: 60px 0 30px;
+            display: flex; align-items: center; gap: 20px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem; color: var(--travel-gold); white-space: nowrap;
+        }
+
+        .gold-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--travel-gold), transparent); }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .travel-link {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 22px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex; align-items: center; gap: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .travel-link i { font-size: 1.4rem; color: var(--travel-gold); }
+
+        .travel-link:hover {
+            background: var(--travel-gold);
+            color: var(--travel-dark);
+            transform: translateY(-10px) rotate(2deg);
+        }
+
+        .travel-link:hover i { color: var(--travel-dark); }
+
+        /* Highlight Site */
+        .official-site-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(45deg, var(--travel-gold), #b38f36);
+            color: var(--travel-dark) !important;
+            font-weight: 900;
+            justify-content: center;
+            font-size: 1.2rem;
+            padding: 25px;
+            border: none;
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        /* Map & Specialty */
+        .explore-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 80px;
+        }
+
+        .special-box {
+            background: #111;
+            padding: 40px;
+            border-radius: 35px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .map-frame {
+            border-radius: 35px;
+            overflow: hidden;
+            height: 400px;
+            filter: grayscale(1) invert(0.92) contrast(1.2);
+            border: 1px solid var(--travel-gold);
+        }
+
+        footer {
+            padding: 100px 0;
+            background: #050505;
+            text-align: center;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .explore-footer { grid-template-columns: 1fr; }
+            .travel-container { margin-top: -50px; }
+            .main-card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero-travel">
+        <div class="keyword-badge">KHÁM PHÁ ĐẤT CẢNG</div>
+        <img src="https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png" alt="Thời tiết Hải Phòng" style="width: 140px; margin-bottom: 20px;">
+        <h1>Thời Tiết Hải Phòng</h1>
+        <p style="letter-spacing: 8px; opacity: 0.7; font-weight: 300;">THE WEATHER ADVENTURE</p>
+    </section>
+
+    <div class="travel-container">
+        <article class="main-card">
+            <div class="nav-header">
+                <h2>Hành Trình Khí Tượng</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="intro-text">
+                <strong>Thời Tiết Hải Phòng ( https://thoitiethaiphong.com )</strong> là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng, thông tin bão lũ và các chỉ số độ ẩm, gió, các thông tin về thủy triều, sóng biển quy chuẩn thông tin thời tiết theo giờ và dự báo thời tiết trong 7 ngày tiếp theo. Ngoài ra có đủ lượng mưa và chỉ số không khí theo chuẩn AQI chi tiết, cảnh báo mức độ ô nhiễm không khí tại Hải Phòng.
+            </div>
+        </article>
+
+        <div class="guide-section">
+            <div class="nav-header">
+                <h2>Cửa Ngõ Thông Tin</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="links-grid">
+                <a href="https://thoitiethaiphong.com" class="travel-link official-site-btn" target="_blank">
+                    <i class="fa-solid fa-map-location-dot"></i> XEM THỜI TIẾT HẢI PHÒNG NGAY
+                </a>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <div class="nav-header">
+                <h2>Nhật Ký Đa Nền Tảng</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="links-grid">
+                <a href="https://www.facebook.com/kenhthoitiethaiphong/" class="travel-link" target="_blank"><i class="fa-brands fa-facebook-square"></i> Facebook Page</a>
+                <a href="https://www.youtube.com/@kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube Travel</a>
+                <a href="https://www.tiktok.com/@kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok Channel</a>
+                <a href="https://www.linkedin.com/in/kenhthoitiethaiphong/" class="travel-link" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn Hub</a>
+                <a href="https://www.pinterest.com/kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-pinterest"></i> Pinterest Board</a>
+                <a href="https://kenhthoitiethaiphong.blogspot.com/" class="travel-link" target="_blank"><i class="fa-brands fa-blogger"></i> Blogger Travel</a>
+                <a href="https://thoitiethaiphong.substack.com" class="travel-link" target="_blank"><i class="fa-solid fa-envelope-open-text"></i> Substack News</a>
+                <a href="https://www.quora.com/profile/Thời-Tiết-Hải-Phòng" class="travel-link" target="_blank"><i class="fa-brands fa-quora"></i> Quora Profile</a>
+                <a href="https://www.tripadvisor.com/Profile/kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-tripadvisor"></i> TripAdvisor</a>
+                <a href="https://github.com/kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-github"></i> GitHub Source</a>
+                <a href="https://hub.docker.com/u/kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-docker"></i> Docker Hub</a>
+                <a href="https://stackoverflow.com/users/32531220/kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-stack-overflow"></i> StackOverflow</a>
+                <a href="https://kenhthoitiethaiphong.my.canva.site/" class="travel-link" target="_blank"><i class="fa-solid fa-palette"></i> Canva Portfolio</a>
+                <a href="https://soundcloud.com/kenhthoitiethaiphong" class="travel-link" target="_blank"><i class="fa-brands fa-soundcloud"></i> SoundCloud</a>
+            </div>
+        </div>
+
+        <div class="explore-footer">
+            <div class="special-box">
+                <span style="color: var(--travel-gold); font-size: 0.7rem; letter-spacing: 3px;">LOCAL FLAVOR</span>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 15px 0;">Nước mắm Cát Hải</h3>
+                <a href="https://amthuchaiphong.com" target="_blank">
+                    <img src="https://amthuchaiphong.com/wp-content/uploads/2024/10/nuoc-mam-cat-hai-1024x1024.png" alt="Nước mắm Cát Hải" style="width: 150px; margin-bottom: 20px; filter: contrast(1.1);">
+                </a>
+                <p style="color: #888;">Đối tác ẩm thực đồng hành cùng hành trình khám phá Hải Phòng.</p>
+            </div>
+            <div class="map-frame">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3729.648388266136!2d106.6309761!3d20.805508099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71002a701943%3A0xac636244c8f22213!2zVGjhu51pIFRp4bq_dCBI4bqjaSBQaMOybmc!5e0!3m2!1sen!2s!4v1774407781033!5m2!1sen!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p style="font-weight: 700; letter-spacing: 2px;">© 2026 THỜI TIẾT HẢI PHÒNG</p>
+        <p style="font-size: 0.8rem; color: #444;">Trạm khí tượng Phù Liễn - Đồi Thiên Văn, Kiến An, Hải Phòng</p>
+        <p style="font-size: 0.8rem; color: #444;">Email: kenhthoitiethaiphong@gmail.com</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Tiết Hải Phòng - Hệ Thống Điều Hành Khí Tượng Đại Dương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --deep-blue: #001d3d;
+            --ocean-blue: #003566;
+            --sky-blue: #00b4d8;
+            --sun-orange: #ffc300;
+            --neon-orange: #ff9e00;
+            --glass: rgba(0, 29, 61, 0.8);
+            --border: rgba(0, 180, 216, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            width: 100%; height: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--deep-blue);
+            color: #fff; overflow: hidden;
+        }
+
+        /* TẦNG 1: BẢN ĐỒ NỀN TOÀN CẢNH */
+        .map-background {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1; filter: saturate(1.2) brightness(0.4) contrast(1.1);
+        }
+        .map-background iframe { width: 100%; height: 100%; border: none; }
+
+        /* HIỆU ỨNG SÓNG BIỂN MỜ */
+        .ocean-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent, rgba(0, 53, 102, 0.4));
+            z-index: 2; pointer-events: none;
+        }
+
+        /* GIAO DIỆN CHÍNH (DASHBOARD) */
+        .dashboard-wrapper {
+            position: relative; z-index: 10;
+            display: grid; grid-template-columns: 400px 1fr 450px;
+            height: 100vh; padding: 25px; gap: 25px;
+        }
+
+        /* KHỐI GLASSMORPHISM */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 35px;
+            display: flex; flex-direction: column;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        /* PHẦN TRÁI: THÔNG TIN TRẠM & GIỚI THIỆU */
+        .panel-left { padding: 40px 30px; }
+        .station-logo {
+            width: 120px; height: 120px; border-radius: 30px;
+            background: #fff; padding: 10px; margin: 0 auto 25px;
+            box-shadow: 0 0 25px var(--sky-blue);
+        }
+        .intro-text {
+            font-size: 1rem; line-height: 1.8; text-align: justify;
+            color: #d1d1d1; overflow-y: auto; padding-right: 10px;
+            scrollbar-width: thin; scrollbar-color: var(--sky-blue) transparent;
+        }
+        .intro-text strong a { color: var(--neon-orange); text-decoration: none; border-bottom: 1px dashed; }
+
+        /* PHẦN GIỮA: TRUNG TÂM ĐIỀU HÀNH */
+        .center-stage {
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .main-brand h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem; color: #fff; margin: 10px 0;
+            text-shadow: 0 0 20px rgba(0, 180, 216, 0.8);
+        }
+        .cta-button {
+            background: linear-gradient(45deg, var(--neon-orange), var(--sun-orange));
+            color: var(--deep-blue); padding: 20px 45px;
+            border-radius: 50px; text-decoration: none;
+            font-weight: 800; font-size: 1.2rem; margin-top: 30px;
+            box-shadow: 0 0 30px rgba(255, 158, 0, 0.4);
+            display: flex; align-items: center; gap: 15px;
+        }
+        .cta-button:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 0 50px var(--neon-orange); }
+
+        /* PHẦN PHẢI: HỆ SINH THÁI LINK (40+) */
+        .link-hub { padding: 30px; overflow-y: auto; scrollbar-width: none; }
+        .link-hub::-webkit-scrollbar { display: none; }
+        .category-tag {
+            color: var(--sun-orange); font-size: 0.75rem; font-weight: 800;
+            letter-spacing: 3px; text-transform: uppercase; margin: 25px 0 12px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .category-tag::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+        .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .link-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px; border-radius: 18px;
+            color: #fff; text-decoration: none; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 10px;
+            transition: 0.3s;
+        }
+        .link-card:hover { 
+            background: rgba(0, 180, 216, 0.2); 
+            border-color: var(--sky-blue); 
+            transform: translateX(5px);
+        }
+        .link-card i { color: var(--sky-blue); font-size: 1.1rem; }
+
+        /* WIDGET ĐỐI TÁC (NƯỚC MẮM CÁT HẢI) */
+        .partner-widget {
+            margin-top: auto; padding: 20px;
+            background: rgba(0,0,0,0.3); border-radius: 25px;
+            text-align: center; border: 1px solid var(--border);
+        }
+        .partner-img { width: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 10px var(--sun-orange)); }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 1200px) {
+            .dashboard-wrapper { grid-template-columns: 1fr; overflow-y: auto; }
+            .map-background { filter: brightness(0.2); }
+            body { overflow-y: auto; }
+            .glass-panel { margin-bottom: 20px; height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="map-background">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3729.648388266136!2d106.6309761!3d20.805508099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71002a701943%3A0xac636244c8f22213!2zVGjhu51pIFRp4bq_dCBI4bqjaSBQaMOybmc!5e0!3m2!1sen!2s!4v1774407781033!5m2!1sen!2s" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+
+    <div class="ocean-overlay"></div>
+
+    <main class="dashboard-wrapper">
+        
+        <aside class="glass-panel panel-left">
+            <div style="text-align: center;">
+                <img src="https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png" class="station-logo" alt="Logo">
+                <h2 style="font-size: 1.5rem; letter-spacing: 2px;">THỜI TIẾT HẢI PHÒNG</h2>
+                <p style="color: var(--sky-blue); font-size: 0.75rem; font-weight: 600; margin-top: 5px;">HỆ THỐNG DỮ LIỆU KHÍ TƯỢNG PHÙ LIỄN</p>
+            </div>
+            
+            <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border);">
+            
+            <div class="intro-text">
+                <strong>Thời Tiết Hải Phòng ( <a href="https://thoitiethaiphong.com" target="_blank">https://thoitiethaiphong.com</a> )</strong> là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng, thông tin bão lũ và các chỉ số độ ẩm, gió, các thông tin về thủy triều, sóng biển quy chuẩn thông tin thời tiết theo giờ và dự báo thời tiết trong 7 ngày tiếp theo. Ngoài ra có đủ lượng mưa và chỉ số không khí theo chuẩn AQI chi tiết, cảnh báo mức độ ô nhiễm không khí tại Hải Phòng.
+            </div>
+
+            <div class="partner-widget">
+                <img src="https://amthuchaiphong.com/wp-content/uploads/2024/10/nuoc-mam-cat-hai-1024x1024.png" class="partner-img" alt="Đối tác">
+                <h4 style="color: var(--sun-orange); margin-bottom: 5px;">Nước mắm Cát Hải</h4>
+                <p style="font-size: 0.7rem; color: #aaa;">Đồng hành cùng hành trình khám phá ẩm thực Hải Phòng</p>
+            </div>
+        </aside>
+
+        <section class="center-stage">
+            <div class="main-brand">
+                <p style="letter-spacing: 8px; font-size: 0.9rem; color: var(--sky-blue);">DATA • OCEAN • WEATHER</p>
+                <h1>HẢI PHÒNG CITY</h1>
+                <p style="font-weight: 300; opacity: 0.7;">Tọa độ: Đồi Thiên Văn, Kiến An, Hải Phòng</p>
+            </div>
+            
+            <a href="https://thoitiethaiphong.com" class="cta-button" target="_blank">
+                <i class="fa-solid fa-satellite-dish"></i> TRUY CẬP WEBSITE CHÍNH THỨC
+            </a>
+            
+            <div style="margin-top: 30px; font-size: 0.8rem; color: var(--sun-orange);">
+                <i class="fa-solid fa-circle-check"></i> Cập nhật thời tiết theo giờ tiêu chuẩn quốc tế
+            </div>
+        </section>
+
+        <aside class="glass-panel">
+            <div class="link-hub">
+                <h2 style="font-family: 'Playfair Display'; font-size: 1.6rem; color: var(--sky-blue);">Ecosystem Hub</h2>
+                
+                <div class="category-tag">Social Channels</div>
+                <div class="links-grid">
+                    <a href="https://www.facebook.com/kenhthoitiethaiphong/" class="link-card" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                    <a href="https://www.youtube.com/@kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a>
+                    <a href="https://www.tiktok.com/@kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a>
+                    <a href="https://www.linkedin.com/in/kenhthoitiethaiphong/" class="link-card" target="_blank"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a>
+                    <a href="https://www.pinterest.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-pinterest-p"></i> Pinterest</a>
+                    <a href="https://www.quora.com/profile/Thời-Tiết-Hải-Phòng" class="link-card" target="_blank"><i class="fa-brands fa-quora"></i> Quora</a>
+                    <a href="https://mastodon.social/@kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-mastodon"></i> Mastodon</a>
+                </div>
+
+                <div class="category-tag">Publishing & Blogs</div>
+                <div class="links-grid">
+                    <a href="https://kenhthoitiethaiphong.blogspot.com/" class="link-card" target="_blank"><i class="fa-brands fa-blogger"></i> Blogger</a>
+                    <a href="https://kenhthoitiethaiphong.wordpress.com/" class="link-card" target="_blank"><i class="fa-brands fa-wordpress"></i> WordPress</a>
+                    <a href="https://sites.google.com/view/kenhthoitiethaiphong/" class="link-card" target="_blank"><i class="fa-brands fa-google"></i> Sites</a>
+                    <a href="https://thoitiethaiphong.substack.com" class="link-card" target="_blank"><i class="fa-solid fa-envelope-open-text"></i> Substack</a>
+                    <a href="https://telegra.ph/Thời-Tiết-Hải-Phòng-03-20" class="link-card" target="_blank"><i class="fa-solid fa-paper-plane"></i> Telegra.ph</a>
+                    <a href="https://kenhthoitiethaiphong.mystrikingly.com" class="link-card" target="_blank"><i class="fa-solid fa-bolt"></i> Strikingly</a>
+                    <a href="https://about.me/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-address-card"></i> About.me</a>
+                    <a href="https://gravatar.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-circle-user"></i> Gravatar</a>
+                </div>
+
+                <div class="category-tag">Engineering Hub</div>
+                <div class="links-grid">
+                    <a href="https://github.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+                    <a href="https://stackoverflow.com/users/32531220/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-stack-overflow"></i> StackOverflow</a>
+                    <a href="https://hub.docker.com/u/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-docker"></i> Docker Hub</a>
+                    <a href="https://www.npmjs.com/~kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-npm"></i> NPM</a>
+                    <a href="https://gitee.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-code-merge"></i> Gitee</a>
+                    <a href="https://qiita.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-terminal"></i> Qiita</a>
+                </div>
+
+                <div class="category-tag">Media & Creative</div>
+                <div class="links-grid">
+                    <a href="https://dribbble.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-dribbble"></i> Dribbble</a>
+                    <a href="https://www.behance.net/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-behance"></i> Behance</a>
+                    <a href="https://500px.com/p/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-500px"></i> 500px</a>
+                    <a href="https://sketchfab.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-cube"></i> Sketchfab</a>
+                    <a href="https://soundcloud.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-soundcloud"></i> SoundCloud</a>
+                    <a href="https://vimeo.com/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-vimeo-v"></i> Vimeo</a>
+                </div>
+
+                <div class="category-tag">Others & Utilities</div>
+                <div class="links-grid">
+                    <a href="https://www.tripadvisor.com/Profile/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-tripadvisor"></i> TripAdvisor</a>
+                    <a href="https://www.trustpilot.com/users/69c10b1a2c70363d3d7817ef" class="link-card" target="_blank"><i class="fa-solid fa-star"></i> Trustpilot</a>
+                    <a href="https://www.scribd.com/user/964019815/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-file-pdf"></i> Scribd</a>
+                    <a href="https://www.slideshare.net/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-brands fa-slideshare"></i> SlideShare</a>
+                    <a href="https://fliphtml5.com/home/kenhthoitiethaiphong" class="link-card" target="_blank"><i class="fa-solid fa-book"></i> FlipHTML5</a>
+                    <a href="https://anyflip.com/homepage/anhoh" class="link-card" target="_blank"><i class="fa-solid fa-file-code"></i> Anyflip</a>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <div style="position: fixed; bottom: 20px; right: 50%; transform: translateX(50%); font-size: 0.7rem; color: rgba(255,255,255,0.3); z-index: 100; letter-spacing: 2px;">
+        © 2026 THỜI TIẾT HẢI PHÒNG • TRẠM KHÍ TƯỢNG PHÙ LIỄN
+    </div>
+
+</body>
+</html>

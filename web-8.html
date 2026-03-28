@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Tiết Hải Phòng - Cập Nhật Dự Báo Thời Tiết Hải Phòng 24/7</title>
+    <meta name="description" content="Kênh thông tin thời tiết Hải Phòng chính xác nhất. Dự báo thời tiết Hải Phòng hàng giờ, 7 ngày tới, bão lũ, thủy triều, chỉ số AQI và lượng mưa.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #0d47a1; /* Deep Sea Blue */
+            --sky-blue: #2196f3; /* Clear Sky Blue */
+            --light-blue: #e3f2fd; /* Soft Blue Grey */
+            --accent-orange: #ff9800; /* Sun Orange */
+            --dark-text: #1a237e; /* Dark Blue Text */
+            --light-text: #f4f4f4;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f0f4f8;
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        /* --- Header Section --- */
+        header {
+            background-color: #fff;
+            padding: 15px 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .brand-container { display: flex; align-items: center; gap: 15px; }
+        .logo-img { width: 50px; height: 50px; border-radius: 12px; }
+        .site-title { font-size: 1.5rem; font-weight: 800; color: var(--primary-blue); text-transform: uppercase; }
+
+        .quick-contact { display: flex; gap: 20px; font-size: 0.9rem; }
+        .quick-contact a { text-decoration: none; color: var(--dark-text); }
+        .quick-contact a:hover { color: var(--sky-blue); }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(135deg, var(--sky-blue) 0%, var(--primary-blue) 100%);
+            color: white;
+            padding: 80px 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Subtle Wave Pattern */
+        .hero::before {
+            content: "";
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23f0f4f8" fill-opacity="1" d="M0,256L80,229.3C160,203,320,149,480,149.3C640,149,800,203,960,208C1120,213,1280,171,1360,149.3L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path></svg>') no-repeat center bottom/cover;
+            z-index: 5;
+        }
+
+        .hero h1 { font-family: 'Plus Jakarta Sans', serif; font-size: 3rem; margin-bottom: 10px; }
+        .hero-stats { font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px; }
+        .keyword-badge { background: var(--accent-orange); color: var(--dark-text); padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 2px; }
+
+        /* --- Content Container --- */
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Giới thiệu verbatim */
+        .intro-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            border-left: 5px solid var(--sky-blue);
+        }
+        .verbatim-text {
+            font-size: 1.1rem;
+            line-height: 2;
+            text-align: justify;
+            color: #444;
+        }
+        .verbatim-text a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* --- Quick Feature Grid --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+        .feature-card i { font-size: 2.5rem; color: var(--sky-blue); margin-bottom: 15px; }
+        .feature-card h3 { color: var(--accent-orange); margin-bottom: 10px; }
+
+        /* --- Link Ecosystem List Section --- */
+        .links-section {
+            margin-bottom: 60px;
+        }
+        .section-header {
+            margin: 40px 0 20px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .section-header h2 {
+            font-size: 1.8rem; color: var(--primary-blue); font-weight: 800;
+        }
+        .header-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--primary-blue), transparent); }
+
+        .list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .list-item {
+            background: #fff;
+            padding: 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--dark-text);
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 600; font-size: 0.9rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            transition: all 0.3s;
+        }
+        .list-item:hover {
+            background: var(--light-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .list-item i { font-size: 1.2rem; width: 25px; text-align: center; color: var(--sky-blue); }
+
+        /* Specialty & Map Widgets */
+        .bottom-widgets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        .widget-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+        .widget-card h3 { margin-bottom: 15px; color: var(--primary-blue); }
+        
+        .map-frame {
+            border-radius: 16px; overflow: hidden;
+            height: 300px; border: 1px solid #eee;
+        }
+        .map-frame iframe { width: 100%; height: 100%; border: none; }
+
+        .partner-logo { width: 120px; margin-bottom: 15px; }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 60px 5%;
+            text-align: center;
+        }
+        footer p { opacity: 0.8; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .bottom-widgets { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr 1fr; }
+            .list-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="brand-container">
+                <img src="https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png" alt="Logo Thời Tiết Hải Phòng" class="logo-img">
+                <span class="site-title">THỜI TIẾT HẢI PHÒNG</span>
+            </div>
+            <div class="quick-contact">
+                <a href="mailto:kenhthoitiethaiphong@gmail.com"><i class="fa-solid fa-envelope"></i> Liên hệ</a>
+                <a href="https://maps.app.goo.gl/9CERJxRacva9gfE98" target="_blank"><i class="fa-solid fa-location-dot"></i> Maps</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="keyword-badge">KHÍ TƯỢNG ĐẤT CẢNG</div>
+        <h1>THỜI TIẾT HẢI PHÒNG</h1>
+        <p class="hero-stats">Chính xác • Nhanh chóng • Chuẩn AQI</p>
+    </section>
+
+    <main class="main-container">
+        <article class="intro-card">
+            <p class="verbatim-text">
+                <a href="https://thoitiethaiphong.com" target="_blank">Thời Tiết Hải Phòng ( https://thoitiethaiphong.com )</a> là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng, thông tin bão lũ và các chỉ số độ ẩm, gió, các thông tin về thủy triều, sóng biển quy chuẩn thông tin thời tiết theo giờ và dự báo thời tiết trong 7 ngày tiếp theo. Ngoài ra có đủ lượng mưa và chỉ số không khí theo chuẩn AQI chi tiết, cảnh báo mức độ ô nhiễm không khí tại Hải Phòng.
+            </p>
+        </article>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h3>Dự Báo Hàng Giờ</h3>
+                <p>Cập nhật dữ liệu chuẩn khí tượng 24/7</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-smog"></i>
+                <h3>Chỉ Số AQI</h3>
+                <p>Cảnh báo ô nhiễm không khí tại Hải Phòng</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-umbrella"></i>
+                <h3>Lượng Mưa</h3>
+                <p>Theo dõi chính xác lượng mưa theo ngày</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-ship"></i>
+                <h3>Thủy Triều & Sóng</h3>
+                <p>Thông tin quan trọng cho cảng và vận tải</p>
+            </div>
+        </div>
+
+        <section class="links-section">
+            <div class="section-header">
+                <h2>Cửa Ngõ Thông Tin Đa Nền Tảng</h2>
+                <div class="header-line"></div>
+            </div>
+            <div class="list-grid">
+                <a href="https://thoitiethaiphong.com" class="list-item" style="grid-column: 1/-1; background: var(--accent-orange); color: var(--dark-text);" target="_blank">
+                    <i class="fa-solid fa-globe" style="color:var(--dark-text);"></i> XEM THỜI TIẾT HẢI PHÒNG TẠI ĐÂY
+                </a>
+                
+                <a href="https://www.facebook.com/kenhthoitiethaiphong/" class="list-item" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                <a href="https://www.youtube.com/@kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a>
+                <a href="https://www.tiktok.com/@kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a>
+                <a href="https://www.linkedin.com/in/kenhthoitiethaiphong/" class="list-item" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+                <a href="https://www.pinterest.com/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-pinterest"></i> Pinterest</a>
+                <a href="https://www.quora.com/profile/Thời-Tiết-Hải-Phòng" class="list-item" target="_blank"><i class="fa-brands fa-quora"></i> Quora</a>
+                
+                <a href="https://kenhthoitiethaiphong.blogspot.com/" class="list-item" target="_blank"><i class="fa-brands fa-blogger"></i> Blogger Travel</a>
+                <a href="https://kenhthoitiethaiphong.wordpress.com/" class="list-item" target="_blank"><i class="fa-brands fa-wordpress"></i> WordPress Blog</a>
+                <a href="https://thoitiethaiphong.substack.com" class="list-item" target="_blank"><i class="fa-solid fa-envelopes-bulk"></i> Substack News</a>
+                <a href="https://sites.google.com/view/kenhthoitiethaiphong/" class="list-item" target="_blank"><i class="fa-brands fa-google"></i> Google Sites</a>
+                
+                <a href="https://dribbble.com/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-dribbble"></i> Dribbble Portfolio</a>
+                <a href="https://www.behance.net/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-behance"></i> Behance Design</a>
+                <a href="https://500px.com/p/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-500px"></i> 500px Gallery</a>
+                <a href="https://soundcloud.com/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-soundcloud"></i> SoundCloud</a>
+                <a href="https://vimeo.com/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-vimeo"></i> Vimeo</a>
+                
+                <a href="https://www.tripadvisor.com/Profile/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-brands fa-tripadvisor"></i> TripAdvisor</a>
+                <a href="https://www.trustpilot.com/users/69c10b1a2c70363d3d7817ef" class="list-item" target="_blank"><i class="fa-solid fa-star"></i> Trustpilot</a>
+                <a href="https://about.me/kenhthoitiethaiphong" class="list-item" target="_blank"><i class="fa-solid fa-user-check"></i> About.me</a>
+            </div>
+        </section>
+
+        <div class="bottom-widgets">
+            <div class="widget-card" style="text-align: center;">
+                <p style="color:var(--accent-orange); font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:bold; margin-bottom:5px;">ĐỐI TÁC ẨM THỰC</p>
+                <h3 style="margin: 5px 0 15px;">Nước mắm Cát Hải</h3>
+                <a href="https://amthuchaiphong.com" target="_blank">
+                    <img src="https://amthuchaiphong.com/wp-content/uploads/2024/10/nuoc-mam-cat-hai-1024x1024.png" alt="Nước mắm Cát Hải" class="partner-logo">
+                </a>
+                <p style="font-size:0.9rem; color:#666; margin-bottom:10px;">Tinh hoa ẩm thực biển Hải Phòng đồng hành cùng mọi hành trình.</p>
+                <a href="https://amthuchaiphong.com" style="color:var(--sky-blue); text-decoration:none;">Ghé thăm: amthuchaiphong.com</a>
+            </div>
+            
+            <div class="widget-card">
+                <h3>Vị Trí Trạm Phù Liễn</h3>
+                <div class="map-frame">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3729.648388266136!2d106.6309761!3d20.805508099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71002a701943%3A0xac636244c8f22213!2zVGjhu51pIFRp4bq_dCBI4bqjaSBQaMOybmc!5e0!3m2!1sen!2s!4v1774407781033!5m2!1sen!2s" width="100%" height="100%" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                <p style="font-size:0.8rem; color:#777; margin-top:10px;"><i class="fa-solid fa-location-dot"></i> Đồi Thiên Văn, Kiến An, Hải Phòng, Vietnam</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Thời Tiết Hải Phòng - Kênh Thông Tin Khí Tượng Đất Cảng</p>
+        <div style="font-size:0.8rem; opacity: 0.6; margin-top:10px;">
+            #thoitiethaiphong #dubaothoitiethaiphong #haiphong #thuytrieu #AQI
+        </div>
+    </footer>
+
+</body>
+</html>

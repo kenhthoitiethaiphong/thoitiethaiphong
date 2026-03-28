@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Tiết Hải Phòng - Hệ Sinh Thái Khí Tượng Vô Cực</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@200;400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --core-green: #0f9d58;
+            --core-gold: #d4af37;
+            --space-bg: #020406;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--space-bg);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            height: 100vh; width: 100vw;
+        }
+
+        /* MAP ENGINE BACKGROUND */
+        #map-universe {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; filter: grayscale(1) invert(0.9) brightness(0.2) contrast(1.5);
+            transform: scale(1.1);
+        }
+
+        #atmosphere-canvas { position: fixed; top: 0; left: 0; z-index: 2; pointer-events: none; }
+
+        /* SINGULARITY CORE */
+        .core-system {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100; text-align: center;
+        }
+
+        .station-orb {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: url('https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png') no-repeat center center/cover;
+            border: 2px solid var(--core-green);
+            box-shadow: 0 0 40px var(--core-green);
+            margin: 0 auto 20px;
+            animation: pulse 4s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--core-green); }
+            50% { transform: scale(1.08); box-shadow: 0 0 70px var(--core-green); }
+        }
+
+        .brand-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.8rem; letter-spacing: 10px;
+            text-transform: uppercase; margin-bottom: 5px;
+        }
+
+        /* ORBIT SYSTEM */
+        .orbit-container {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50; pointer-events: none;
+        }
+
+        .orbit-ring {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 50%;
+            animation: rotate linear infinite;
+        }
+
+        @keyframes rotate { 
+            from { transform: translate(-50%, -50%) rotate(0deg); } 
+            to { transform: translate(-50%, -50%) rotate(360deg); } 
+        }
+
+        .node {
+            position: absolute; width: 36px; height: 36px;
+            background: rgba(10, 15, 20, 0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; text-decoration: none;
+            backdrop-filter: blur(10px);
+            pointer-events: all;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.9rem;
+        }
+
+        .node:hover {
+            background: var(--core-green);
+            transform: scale(1.8) !important;
+            box-shadow: 0 0 25px var(--core-green);
+            z-index: 1000;
+        }
+
+        /* FLOATING SHARDS */
+        .shard {
+            position: fixed; background: var(--glass);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 25px; border-radius: 24px; z-index: 150;
+        }
+
+        .shard-intro { top: 30px; left: 30px; width: 380px; }
+        .shard-partner { bottom: 30px; left: 30px; width: 320px; text-align: center; }
+        .shard-stats { top: 30px; right: 30px; width: 320px; }
+
+        .seo-anchor {
+            position: fixed; bottom: 30px; right: 30px;
+            color: var(--core-gold); text-decoration: none;
+            font-weight: 800; letter-spacing: 4px; font-size: 0.7rem; z-index: 150;
+        }
+
+        /* HIDE MOBILE - REQUIRES DESKTOP FOR FULL EXP */
+        @media (max-width: 1000px) {
+            .orbit-container { display: none; }
+            body { overflow-y: auto; }
+            .shard { position: relative; width: 90% !important; margin: 20px auto; top: 0; left: 0; right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map-universe">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3729.648388266136!2d106.6309761!3d20.805508099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71002a701943%3A0xac636244c8f22213!2zVGjhu51pIFRp4bq_dCBI4bqjaSBQaMOybmc!5e0!3m2!1sen!2s!4v1774407781033!5m2!1sen!2s" width="100%" height="100%"></iframe>
+    </div>
+
+    <canvas id="atmosphere-canvas"></canvas>
+
+    <div class="core-system">
+        <a href="https://thoitiethaiphong.com" target="_blank">
+            <div class="station-orb"></div>
+        </a>
+        <h1 class="brand-title">Thời Tiết Hải Phòng</h1>
+        <p style="letter-spacing: 5px; font-weight: 200; font-size: 0.7rem; color: var(--core-green);">DATA COMMAND CENTER</p>
+    </div>
+
+    <div class="shard shard-intro">
+        <h3 style="color:var(--core-green); margin-bottom:12px; font-size: 0.7rem; letter-spacing: 2px;">LOG_SYSTEM_INFO</h3>
+        <p style="font-size: 0.8rem; color: #bdc3c7; line-height: 1.8; text-align: justify;">
+            <strong>Thời Tiết Hải Phòng ( https://thoitiethaiphong.com )</strong> là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng. Hệ thống quy chuẩn thông tin thời tiết theo giờ và dự báo 7 ngày, cập nhật bão lũ, thủy triều và chỉ số không khí AQI chi tiết.
+        </p>
+    </div>
+
+    <div class="shard shard-partner">
+        <p style="font-size: 0.5rem; letter-spacing: 2px; opacity: 0.6;">PARTNER_VALOR</p>
+        <a href="https://amthuchaiphong.com" target="_blank">
+            <img src="https://amthuchaiphong.com/wp-content/uploads/2024/10/nuoc-mam-cat-hai-1024x1024.png" style="width: 70px;" alt="Nước mắm Cát Hải">
+        </a>
+        <h4 style="margin: 8px 0 2px;">Nước mắm Cát Hải</h4>
+        <small><a href="https://amthuchaiphong.com" style="color:var(--core-gold); text-decoration:none;">amthuchaiphong.com</a></small>
+    </div>
+
+    <div class="shard shard-stats">
+        <p style="font-size: 0.7rem;"><i class="fa-solid fa-location-dot"></i> Đồi Thiên Văn, Kiến An, Hải Phòng</p>
+        <div style="margin-top: 15px; font-size: 0.65rem; color: #777;">
+            <p>📡 TRẠM KHÍ TƯỢNG PHÙ LIỄN</p>
+            <p>📧 kenhthoitiethaiphong@gmail.com</p>
+        </div>
+    </div>
+
+    <a href="https://thoitiethaiphong.com" class="seo-anchor">THỜI TIẾT HẢI PHÒNG</a>
+
+    <div class="orbit-container" id="orbit-root">
+        <div class="orbit-ring" id="ring-1" style="width: 440px; height: 440px; animation-duration: 40s;"></div>
+        <div class="orbit-ring" id="ring-2" style="width: 620px; height: 620px; animation-duration: 70s; animation-direction: reverse;"></div>
+        <div class="orbit-ring" id="ring-3" style="width: 800px; height: 800px; animation-duration: 100s;"></div>
+        <div class="orbit-ring" id="ring-4" style="width: 980px; height: 980px; animation-duration: 130s; animation-direction: reverse;"></div>
+    </div>
+
+    <script>
+        // Full List of 43 Platforms from Source
+        const allLinks = [
+            // Ring 1: Primary Socials
+            { ring: 0, icon: 'fa-facebook', url: 'https://www.facebook.com/kenhthoitiethaiphong/' },
+            { ring: 0, icon: 'fa-youtube', url: 'https://www.youtube.com/@kenhthoitiethaiphong' },
+            { ring: 0, icon: 'fa-tiktok', url: 'https://www.tiktok.com/@kenhthoitiethaiphong' },
+            { ring: 0, icon: 'fa-linkedin-in', url: 'https://www.linkedin.com/in/kenhthoitiethaiphong/' },
+            { ring: 0, icon: 'fa-pinterest-p', url: 'https://www.pinterest.com/kenhthoitiethaiphong' },
+            { ring: 0, icon: 'fa-mastodon', url: 'https://mastodon.social/@kenhthoitiethaiphong' },
+            { ring: 0, icon: 'fa-tumblr', url: 'https://www.tumblr.com/kenhthoitiethaiphong' },
+            { ring: 0, icon: 'fa-quora', url: 'https://www.quora.com/profile/Thời-Tiết-Hải-Phòng' },
+
+            // Ring 2: Blogs & Content
+            { ring: 1, icon: 'fa-blogger', url: 'https://kenhthoitiethaiphong.blogspot.com/' },
+            { ring: 1, icon: 'fa-wordpress', url: 'https://kenhthoitiethaiphong.wordpress.com/' },
+            { ring: 1, icon: 'fa-google', url: 'https://sites.google.com/view/kenhthoitiethaiphong/' },
+            { ring: 1, icon: 'fa-envelope-open-text', url: 'https://thoitiethaiphong.substack.com' },
+            { ring: 1, icon: 'fa-pen-nib', url: 'https://kenhthoitiet.livejournal.com/' },
+            { ring: 1, icon: 'fa-paper-plane', url: 'https://telegra.ph/Thời-Tiết-Hải-Phòng-03-20' },
+            { ring: 1, icon: 'fa-bolt', url: 'https://kenhthoitiethaiphong.mystrikingly.com' },
+            { ring: 1, icon: 'fa-wix', url: 'https://kenhthoitiethaiphong.wixsite.com/kenhthoitiethaiphong' },
+            { ring: 1, icon: 'fa-user-astronaut', url: 'https://about.me/kenhthoitiethaiphong' },
+            { ring: 1, icon: 'fa-id-badge', url: 'https://gravatar.com/kenhthoitiethaiphong' },
+
+            // Ring 3: Tech & Dev
+            { ring: 2, icon: 'fa-github', url: 'https://github.com/kenhthoitiethaiphong' },
+            { ring: 2, icon: 'fa-stack-overflow', url: 'https://stackoverflow.com/users/32531220/kenhthoitiethaiphong' },
+            { ring: 2, icon: 'fa-docker', url: 'https://hub.docker.com/u/kenhthoitiethaiphong' },
+            { ring: 2, icon: 'fa-box-archive', url: 'https://sourceforge.net/u/kenhthoitiethp/profile/' },
+            { ring: 2, icon: 'fa-code-fork', url: 'https://gitee.com/kenhthoitiethaiphong' },
+            { ring: 2, icon: 'fa-npm', url: 'https://www.npmjs.com/~kenhthoitiethaiphong' },
+            { ring: 2, icon: 'fa-terminal', url: 'https://qiita.com/kenhthoitiethaiphong' },
+            { ring: 2, icon: 'fa-server', url: 'https://kenhthoitiethaiphong.infinityfree.me/' },
+
+            // Ring 4: Creative & Portfolio & Reviews
+            { ring: 3, icon: 'fa-palette', url: 'https://kenhthoitiethaiphong.my.canva.site/' },
+            { ring: 3, icon: 'fa-dribbble', url: 'https://dribbble.com/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-behance', url: 'https://www.behance.net/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-500px', url: 'https://500px.com/p/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-cube', url: 'https://sketchfab.com/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-soundcloud', url: 'https://soundcloud.com/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-vimeo-v', url: 'https://vimeo.com/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-tripadvisor', url: 'https://www.tripadvisor.com/Profile/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-star', url: 'https://www.trustpilot.com/users/69c10b1a2c70363d3d7817ef' },
+            { ring: 3, icon: 'fa-file-pdf', url: 'https://www.scribd.com/user/964019815/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-slideshare', url: 'https://www.slideshare.net/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-book-open', url: 'https://fliphtml5.com/home/kenhthoitiethaiphong' },
+            { ring: 3, icon: 'fa-file-code', url: 'https://anyflip.com/homepage/anhoh' }
+        ];
+
+        const rings = [
+            document.getElementById('ring-1'),
+            document.getElementById('ring-2'),
+            document.getElementById('ring-3'),
+            document.getElementById('ring-4')
+        ];
+
+        allLinks.forEach((link, i) => {
+            const node = document.createElement('a');
+            node.className = 'node';
+            node.href = link.url;
+            node.target = '_blank';
+            node.innerHTML = `<i class="fa-brands ${link.icon.startsWith('fa-') ? link.icon : 'fa-solid ' + link.icon}"></i>`;
+            
+            const ringIdx = link.ring;
+            const nodesInRing = allLinks.filter(l => l.ring === ringIdx).length;
+            const linkIdxInRing = allLinks.filter((l, idx) => l.ring === ringIdx && idx <= i).length - 1;
+            
+            const angle = (linkIdxInRing / nodesInRing) * (Math.PI * 2);
+            const radius = (220 + (ringIdx * 90)); // Dynamic spacing
+            
+            node.style.left = `calc(50% + ${Math.cos(angle) * radius}px - 18px)`;
+            node.style.top = `calc(50% + ${Math.sin(angle) * radius}px - 18px)`;
+            rings[ringIdx].appendChild(node);
+        });
+
+        // CANVAS ANIMATION (Subtle Dust)
+        const canvas = document.getElementById('atmosphere-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        for(let i=0; i<120; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*1.5, sx: Math.random()*0.4-0.2, sy: Math.random()*0.4-0.2 });
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.sx; p.y += p.sy;
+                if(p.x > canvas.width) p.x = 0; if(p.y > canvas.height) p.y = 0;
+                ctx.fillStyle = 'rgba(15, 157, 88, 0.2)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

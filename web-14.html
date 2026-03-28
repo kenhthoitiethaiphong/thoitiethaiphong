@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Tiết Hải Phòng - Google Maps Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --google-blue: #1a73e8;
+            --google-gray: #70757a;
+            --google-border: #dadce0;
+            --bg-light: #f8f9fa;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Nền bản đồ toàn màn hình */
+        .map-background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #e5e3df; z-index: 1;
+        }
+        .map-background iframe { width: 100%; height: 100%; border: none; }
+
+        /* Thanh tìm kiếm phía trên */
+        .search-container {
+            position: fixed; top: 12px; left: 12px; z-index: 100;
+            width: 392px; background: white; border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex; align-items: center; padding: 0 16px; height: 48px;
+        }
+        .search-container .site-logo-mini { width: 24px; height: 24px; margin-right: 12px; border-radius: 4px; }
+        .search-container input { border: none; outline: none; flex: 1; font-size: 16px; }
+
+        /* Thanh bên chứa thông tin */
+        .side-panel {
+            position: fixed; top: 0; left: 0; width: 408px; height: 100%;
+            background: white; z-index: 90; box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto; padding-top: 70px; scrollbar-width: thin;
+        }
+
+        /* Phần ảnh bìa */
+        .cover-photo {
+            width: 100%; height: 200px;
+            background: url('http://thoitiethaiphong.com/wp-content/uploads/2026/03/du-ba-thoi-tiet-hai-phong.jpg') center/cover;
+        }
+
+        /* Nội dung chi tiết */
+        .panel-content { padding: 20px 24px; }
+        .title-section { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .title-section h1 { font-size: 24px; font-weight: 400; margin: 0; }
+        .title-section img { width: 60px; height: 60px; border-radius: 8px; border: 1px solid var(--google-border); }
+        .title-sub { color: var(--google-gray); font-size: 14px; margin-top: -12px; margin-bottom: 16px; }
+
+        /* Nút hành động nhanh */
+        .action-buttons {
+            display: flex; justify-content: space-between;
+            padding: 16px 0; border-top: 1px solid var(--google-border);
+            border-bottom: 1px solid var(--google-border);
+        }
+        .action-btn {
+            text-align: center; color: var(--google-blue); text-decoration: none;
+            flex: 1; font-size: 12px;
+        }
+        .action-btn i { display: block; font-size: 20px; margin-bottom: 6px; }
+
+        /* Thông tin liên hệ */
+        .info-row {
+            display: flex; align-items: flex-start; padding: 12px 0;
+            border-bottom: 1px solid #f1f3f4; color: #3c4043; font-size: 14px;
+        }
+        .info-row i { color: var(--google-blue); width: 40px; font-size: 18px; margin-top: 2px; }
+        .info-row span { flex: 1; line-height: 1.4; }
+
+        /* Đối tác Am Thuc Hai Phong */
+        .partner-section {
+            background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 20px 0;
+            display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;
+            border: 1px solid var(--google-border);
+        }
+        .partner-section img { width: 50px; height: 50px; border-radius: 50%; }
+        .partner-info h4 { margin: 0; font-size: 14px; color: var(--google-blue); }
+        .partner-info p { margin: 2px 0 0; font-size: 12px; color: var(--google-gray); }
+
+        /* Nhóm Social Links (Hơn 40 link) */
+        .social-group { margin-top: 20px; }
+        .social-group h3 { font-size: 15px; font-weight: 500; margin: 20px 0 12px; color: #202124; border-bottom: 2px solid var(--google-blue); display: inline-block; }
+        .link-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .social-item {
+            display: flex; align-items: center; padding: 8px;
+            background: var(--bg-light); border-radius: 4px;
+            text-decoration: none; color: #3c4043; font-size: 12px;
+            transition: background 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .social-item:hover { background: #e8f0fe; color: var(--google-blue); }
+        .social-item i { margin-right: 8px; width: 16px; text-align: center; color: var(--google-gray); }
+
+        @media (max-width: 500px) {
+            .side-panel, .search-container { width: calc(100% - 24px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="search-container">
+        <img src="https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png" class="site-logo-mini" alt="Logo">
+        <input type="text" value="Thời Tiết Hải Phòng" readonly>
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+
+    <div class="map-background">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3729.648388266136!2d106.6309761!3d20.805508099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71002a701943%3A0xac636244c8f22213!2zVGjhu51pIFRp4bq_dCBI4bqjaSBQaMOybmc!5e0!3m2!1sen!2s!4v1774407781033!5m2!1sen!2s"></iframe>
+    </div>
+
+    <aside class="side-panel">
+        <div class="cover-photo"></div>
+        
+        <div class="panel-content">
+            <div class="title-section">
+                <div>
+                    <h1>Thời Tiết Hải Phòng</h1>
+                </div>
+                <img src="https://thoitiethaiphong.com/wp-content/uploads/2026/03/logo-thoi-tiet-hai-phong.png" alt="Logo">
+            </div>
+            <p class="title-sub">Dịch vụ dự báo thời tiết • Trạm khí tượng Phù Liễn</p>
+
+            <div class="action-buttons">
+                <a href="https://maps.app.goo.gl/9CERJxRacva9gfE98" class="action-btn" target="_blank">
+                    <i class="fa-solid fa-diamond-turn-right"></i>Đường đi
+                </a>
+                <a href="#" class="action-btn"><i class="fa-solid fa-bookmark"></i>Lưu</a>
+                <a href="https://thoitiethaiphong.com" class="action-btn" target="_blank">
+                    <i class="fa-solid fa-globe"></i>Website
+                </a>
+                <a href="#" class="action-btn"><i class="fa-solid fa-share-nodes"></i>Chia sẻ</a>
+            </div>
+
+            <div class="contact-info">
+                <div class="info-row">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>RJ4J+69V, Đồi Thiên Văn, Kiến An, Hải Phòng, Vietnam</span>
+                </div>
+                <div class="info-row">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>kenhthoitiethaiphong@gmail.com</span>
+                </div>
+                <div class="info-row" style="background: #fdf7f2; border-radius: 8px; padding: 12px; border: none; margin-top: 10px;">
+                    <i class="fa-solid fa-circle-info" style="color: #e67e22;"></i>
+                    <span>Thời Tiết Hải Phòng ( https://thoitiethaiphong.com ) là một kênh thông tin quan trọng cập nhập nhanh và chính xác về chỉ số dự báo thời tiết tại Hải Phòng... Ngoài ra có đủ lượng mưa và chỉ số không khí theo chuẩn AQI chi tiết.</span>
+                </div>
+            </div>
+
+            <a href="https://amthuchaiphong.com" class="partner-section" target="_blank">
+                <img src="https://amthuchaiphong.com/wp-content/uploads/2024/10/nuoc-mam-cat-hai-1024x1024.png" alt="Am Thuc Hai Phong">
+                <div class="partner-info">
+                    <h4>Đối tác: Amthuchaiphong.com</h4>
+                    <p>Khám phá văn hóa ẩm thực Đất Cảng</p>
+                </div>
+            </a>
+
+            <div class="social-group">
+                <h3>Mạng xã hội & Video</h3>
+                <div class="link-grid">
+                    <a href="https://www.youtube.com/@kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-youtube"></i>Youtube</a>
+                    <a href="https://www.facebook.com/kenhthoitiethaiphong/" class="social-item" target="_blank"><i class="fa-brands fa-facebook"></i>Facebook</a>
+                    <a href="https://www.tiktok.com/@kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-tiktok"></i>Tiktok</a>
+                    <a href="https://www.linkedin.com/in/kenhthoitiethaiphong/" class="social-item" target="_blank"><i class="fa-brands fa-linkedin"></i>Linkedin</a>
+                    <a href="https://www.pinterest.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-pinterest"></i>Pinterest</a>
+                    <a href="https://www.tumblr.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-tumblr"></i>Tumblr</a>
+                    <a href="https://mastodon.social/@kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-mastodon"></i>Mastodon</a>
+                </div>
+
+                <h3>Blog & Nội dung</h3>
+                <div class="link-grid">
+                    <a href="https://kenhthoitiethaiphong.blogspot.com/" class="social-item" target="_blank"><i class="fa-brands fa-blogger"></i>Blogger</a>
+                    <a href="https://kenhthoitiethaiphong.wordpress.com/" class="social-item" target="_blank"><i class="fa-brands fa-wordpress"></i>Wordpress</a>
+                    <a href="https://sites.google.com/view/kenhthoitiethaiphong/" class="social-item" target="_blank"><i class="fa-brands fa-google"></i>Google Site</a>
+                    <a href="https://thoitiethaiphong.substack.com" class="social-item" target="_blank"><i class="fa-solid fa-envelopes-bulk"></i>Substack</a>
+                    <a href="https://telegra.ph/Thời-Tiết-Hải-Phòng-03-20" class="social-item" target="_blank"><i class="fa-solid fa-paper-plane"></i>Telegra</a>
+                    <a href="https://kenhthoitiethaiphong.mystrikingly.com" class="social-item" target="_blank"><i class="fa-solid fa-bolt"></i>Strikingly</a>
+                    <a href="https://kenhthoitiet.livejournal.com/" class="social-item" target="_blank"><i class="fa-solid fa-pen-nib"></i>LiveJournal</a>
+                    <a href="https://kenhthoitiethaiphong.wixsite.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-wix"></i>WIX</a>
+                    <a href="https://about.me/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-id-card"></i>About.me</a>
+                    <a href="https://gravatar.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-circle-user"></i>Gravatar</a>
+                </div>
+
+                <h3>Kỹ thuật & Dev</h3>
+                <div class="link-grid">
+                    <a href="https://github.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-github"></i>GitHub</a>
+                    <a href="https://stackoverflow.com/users/32531220/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-stack-overflow"></i>StackOverflow</a>
+                    <a href="https://hub.docker.com/u/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-docker"></i>Docker</a>
+                    <a href="https://sourceforge.net/u/kenhthoitiethp/profile/" class="social-item" target="_blank"><i class="fa-solid fa-box-open"></i>Sourceforge</a>
+                    <a href="https://qiita.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-q"></i>Qiita</a>
+                    <a href="https://gitee.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-code-fork"></i>Gitee</a>
+                    <a href="https://www.npmjs.com/~kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-npm"></i>npm</a>
+                    <a href="https://kenhthoitiethaiphong.infinityfree.me/" class="social-item" target="_blank"><i class="fa-solid fa-server"></i>InfinityFree</a>
+                </div>
+
+                <h3>Sáng tạo & Media</h3>
+                <div class="link-grid">
+                    <a href="https://dribbble.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-dribbble"></i>Dribbble</a>
+                    <a href="https://www.behance.net/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-behance"></i>Behance</a>
+                    <a href="https://500px.com/p/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-500px"></i>500px</a>
+                    <a href="https://kenhthoitiethaiphong.my.canva.site/" class="social-item" target="_blank"><i class="fa-solid fa-palette"></i>Canva</a>
+                    <a href="https://sketchfab.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-cube"></i>Sketchfab</a>
+                    <a href="https://vimeo.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-vimeo"></i>Vimeo</a>
+                    <a href="https://soundcloud.com/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-soundcloud"></i>SoundCloud</a>
+                </div>
+
+                <h3>Tài liệu & Đánh giá</h3>
+                <div class="link-grid">
+                    <a href="https://www.slideshare.net/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-slideshare"></i>Slideshare</a>
+                    <a href="https://www.scribd.com/user/964019815/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-scribd"></i>Scribd</a>
+                    <a href="https://www.magcloud.com/user/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-book"></i>Magcloud</a>
+                    <a href="https://fliphtml5.com/home/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-solid fa-file-pdf"></i>Fliphtml5</a>
+                    <a href="https://anyflip.com/homepage/anhoh" class="social-item" target="_blank"><i class="fa-solid fa-file-code"></i>Anyflip</a>
+                    <a href="https://www.tripadvisor.com/Profile/kenhthoitiethaiphong" class="social-item" target="_blank"><i class="fa-brands fa-tripadvisor"></i>TripAdvisor</a>
+                    <a href="https://www.trustpilot.com/users/69c10b1a2c70363d3d7817ef" class="social-item" target="_blank"><i class="fa-solid fa-star"></i>Trustpilot</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+</body>
+</html>
